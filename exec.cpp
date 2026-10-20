@@ -8,6 +8,8 @@ int main()
 {
 	State s(32, 0.01f);
 
+	std::cout << "testing coderabbit\n";
+
 	while (true)
 	{
 		int state;
