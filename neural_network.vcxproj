@@ -125,9 +125,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="digit_preprocessing.cpp" />
     <ClCompile Include="exec.cpp" />
     <ClCompile Include="layer.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="neural_network.cpp" />
     <ClCompile Include="neuron.cpp" />
     <ClCompile Include="render.cpp" />
@@ -136,6 +136,7 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="digit_preprocessing.hpp" />
     <ClInclude Include="renderer.hpp" />
     <ClInclude Include="layer.hpp" />
     <ClInclude Include="neural_network.hpp" />

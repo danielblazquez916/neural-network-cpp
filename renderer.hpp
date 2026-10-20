@@ -4,10 +4,9 @@
 #include <unordered_set>
 #include <iostream>
 #include "neural_network.hpp"
+#include "digit_preprocessing.hpp"
 
 void render_loop(neural_network& nn);
-
-std::vector<float> image_to_vector(const sf::Image& image);
 
 sf::Image get_28x28_Image(const std::unordered_set<int>& painted, sf::RenderWindow& window, int CELL_SIZE);
 

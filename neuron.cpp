@@ -67,3 +67,4 @@ float Neuron::get_output(std::vector<float>& inputs, std::normal_distribution<fl
 
 	return output;
 }
+

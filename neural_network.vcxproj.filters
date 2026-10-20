@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="digit_preprocessing.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="render.cpp">
@@ -44,6 +44,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="digit_preprocessing.hpp">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
     <ClInclude Include="neural_network.hpp">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
