@@ -1,4 +1,6 @@
 #include "renderer.hpp"
+#include <algorithm>
+#include <utility>
 
 void draw_grid(sf::RenderWindow& window, int CELL_SIZE)
 {
@@ -100,66 +102,18 @@ void paint(sf::RenderWindow& window, int CELL_SIZE, int col, int row, int& lastC
 
 sf::Image get_28x28_Image(const std::unordered_set<int>& painted, sf::RenderWindow& window, int CELL_SIZE)
 {
+	if (CELL_SIZE <= 0) return preprocess_digit(sf::Image{});
 	int width = window.getSize().x / CELL_SIZE;
 	int height = window.getSize().y / CELL_SIZE;
-
-	std::vector<std::uint8_t> pixels(width * height, 0);
+	if (width == 0 || height == 0) return preprocess_digit(sf::Image{});
+	sf::Image image({ static_cast<unsigned int>(width), static_cast<unsigned int>(height) }, sf::Color::Black);
 
 	for (int pixel : painted)
 	{
-		if (pixel >= 0 && pixel < pixels.size())
-			pixels[pixel] = 255;
+		if (pixel >= 0 && pixel < width * height)
+			image.setPixel({ static_cast<unsigned int>(pixel % width), static_cast<unsigned int>(pixel / width) }, sf::Color::White);
 	}
-
-	sf::Image image({ static_cast<unsigned int>(width),static_cast<unsigned int>(height) }, sf::Color::Black);
-
-	for (int i = 0; i < pixels.size(); ++i)
-	{
-		int row = i / width;
-		int col = i % width;
-
-		std::uint8_t value = pixels[i];
-
-		image.setPixel({ static_cast<unsigned int>(col), static_cast<unsigned int>(row) }, sf::Color(value, value, value));
-	}
-
-	sf::Texture texture(image);
-	texture.setSmooth(true);
-
-	sf::Sprite sprite(texture);
-
-	float scaleX = 28.f / static_cast<float>(width);
-	float scaleY = 28.f / static_cast<float>(height);
-
-	sprite.setScale({ scaleX, scaleY });
-	sprite.setPosition({ 0.f, 0.f });
-
-	sf::RenderTexture renderTexture({ 28, 28 });
-	renderTexture.clear(sf::Color::Black);
-	renderTexture.draw(sprite);
-	renderTexture.display();
-
-	return renderTexture.getTexture().copyToImage();
-}
-
-std::vector<float> image_to_vector(const sf::Image& image)
-{
-	std::vector<float> input;
-	input.reserve(28 * 28);
-
-	for (unsigned int y = 0; y < 28; ++y)
-	{
-		for (unsigned int x = 0; x < 28; ++x)
-		{
-			sf::Color color = image.getPixel({ x, y });
-
-			float normalized = color.r / 255.0f;
-
-			input.push_back(normalized);
-		}
-	}
-
-	return input;
+	return preprocess_digit(image);
 }
 
 void render_loop(neural_network& nn)
@@ -220,6 +174,12 @@ void render_loop(neural_network& nn)
 					std::cout << "\n- Preparing the drawing...\n";
 
 					sf::Image img28 = get_28x28_Image(painted, window, CELL_SIZE);
+					auto input = image_to_vector(img28);
+					if (std::none_of(input.begin(), input.end(), [](float value) { return value > 0.0f; }))
+					{
+						std::cout << "- Draw a digit before submitting.\n";
+						continue;
+					}
 
 					int label;
 
@@ -233,7 +193,8 @@ void render_loop(neural_network& nn)
 						std::cin.ignore(1000, '\n');
 					}
 
-					nn.images.push_back({ image_to_vector(img28), label });
+					// Store the exact processed vector that State::drawing passes to prediction.
+					nn.images.push_back({ std::move(input), label });
 
 					end = 1;
 				}
