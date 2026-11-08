@@ -1,21 +1,53 @@
 #pragma once
 
-#include "neuron.hpp"
+#include "optimizer.hpp"
+#include <cstdint>
+#include <random>
+#include <vector>
 
 class Layer
 {
 public:
-	std::vector<Neuron> neurons;
+	int in_features;
+	int out_features;
 	bool ReLU;
-	std::vector<float> gradients;
+	bool batchnorm;
+	float dropout;
+
+	Param weights;
+	Param bias;
+	Param gamma;
+	Param beta;
+	std::vector<float> running_mean;
+	std::vector<float> running_var;
+
 	std::vector<float> outputs;
-	bool first_time;
+	std::vector<float> gradients;
 
-	Layer(size_t layer_size, std::vector<Neuron>* neurons = nullptr, bool ReLU = true);
+	Layer();
+	Layer(int in_features, int out_features, bool ReLU = true, bool batchnorm = false, float dropout = 0.f);
 
-	void gradient(std::vector<float>& next_gradients, std::vector<Neuron>& next_neurons);
+	void init_parameters(std::mt19937& rng);
 
-	void last_layer_gradient(std::vector<float>& probs, int label);
+	const std::vector<float>& forward(const float* inputs, int batch, bool training, std::mt19937& rng);
 
-	void start(std::vector<float> inputs);
+	const float* backward(const float* grad_outputs, bool need_input_gradient);
+
+	void zero_gradients();
+	void update(const OptimizerConfig& config, float learning_rate, long step);
+	void reset_optimizer_state();
+	bool is_finite() const;
+
+private:
+	static constexpr float bn_epsilon = 1e-5f;
+	static constexpr float bn_momentum = 0.1f;
+
+	const float* inputs_;
+	int batch_;
+	bool dropout_active_;
+
+	std::vector<float> normalized_;
+	std::vector<float> inv_std_;
+	std::vector<float> dropout_mask_;
+	std::vector<float> scratch_;
 };

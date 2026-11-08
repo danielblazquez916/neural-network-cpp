@@ -76,6 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,6 +91,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -102,6 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -117,6 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -125,21 +129,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="augment.cpp" />
+    <ClCompile Include="drawing.cpp" />
     <ClCompile Include="exec.cpp" />
+    <ClCompile Include="kernels.cpp" />
+    <ClCompile Include="kernels_avx2.cpp" />
     <ClCompile Include="layer.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="neural_network.cpp" />
-    <ClCompile Include="neuron.cpp" />
-    <ClCompile Include="render.cpp" />
+    <ClCompile Include="optimizer.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="state.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="augment.hpp" />
+    <ClInclude Include="drawing.hpp" />
+    <ClInclude Include="kernels.hpp" />
     <ClInclude Include="renderer.hpp" />
     <ClInclude Include="layer.hpp" />
     <ClInclude Include="neural_network.hpp" />
-    <ClInclude Include="neuron.hpp" />
+    <ClInclude Include="optimizer.hpp" />
     <ClInclude Include="state.hpp" />
     <ClInclude Include="utils.hpp" />
   </ItemGroup>

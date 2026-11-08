@@ -9,6 +9,8 @@ void render_loop(neural_network& nn);
 
 std::vector<float> image_to_vector(const sf::Image& image);
 
+bool prepare_drawing(const std::unordered_set<int>& painted, sf::RenderWindow& window, int CELL_SIZE, std::vector<float>& pixels);
+
 sf::Image get_28x28_Image(const std::unordered_set<int>& painted, sf::RenderWindow& window, int CELL_SIZE);
 
 void paint(sf::RenderWindow& window, int CELL_SIZE, int col, int row, int& lastCol, int& lastRow, std::unordered_set<int>& grid, bool is_drawing);

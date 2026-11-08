@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+#include "drawing.hpp"
 
 void draw_grid(sf::RenderWindow& window, int CELL_SIZE)
 {
@@ -28,7 +29,6 @@ void paint(sf::RenderWindow& window, int CELL_SIZE, int col, int row, int& lastC
 
 	if (col >= 0 && row >= 0 && col < cols && row < rows)
 	{
-		// primer punto del trazo
 		if (lastCol == -1 || lastRow == -1)
 		{
 			grid.insert(row * cols + col);
@@ -142,6 +142,21 @@ sf::Image get_28x28_Image(const std::unordered_set<int>& painted, sf::RenderWind
 	return renderTexture.getTexture().copyToImage();
 }
 
+bool prepare_drawing(const std::unordered_set<int>& painted, sf::RenderWindow& window, int CELL_SIZE, std::vector<float>& pixels)
+{
+	const int cols = static_cast<int>(window.getSize().x) / CELL_SIZE;
+	const int rows = static_cast<int>(window.getSize().y) / CELL_SIZE;
+
+	std::vector<float> grid(static_cast<size_t>(rows) * cols, 0.f);
+
+	for (int cell : painted)
+	{
+		if (cell >= 0 && cell < rows * cols) grid[cell] = 1.f;
+	}
+
+	return preprocess_drawing(grid, rows, cols, pixels);
+}
+
 std::vector<float> image_to_vector(const sf::Image& image)
 {
 	std::vector<float> input;
@@ -219,23 +234,42 @@ void render_loop(neural_network& nn)
 				{
 					std::cout << "\n- Preparing the drawing...\n";
 
-					sf::Image img28 = get_28x28_Image(painted, window, CELL_SIZE);
+					std::vector<float> pixels;
 
-					int label;
-
-					while (true)
+					if (!prepare_drawing(painted, window, CELL_SIZE, pixels))
 					{
-						std::cout << "- Which number have you drawn?\n" << std::flush;
-						if (!(std::cin >> label) || label > 9 || label < 0) std::cout << "- Stop typing shit, just write the correct number, it's not that hard.\n\n";
-						else break;
-
-						std::cin.clear();
-						std::cin.ignore(1000, '\n');
+						std::cout << "- The blackboard is empty or the drawing is too small, draw a digit first.\n";
 					}
+					else
+					{
+						std::cout << "- This is what the Neural Network will see:\n" << ascii_digit(pixels);
 
-					nn.images.push_back({ image_to_vector(img28), label });
+						int label = -1;
 
-					end = 1;
+						while (true)
+						{
+							std::cout << "- Which number have you drawn?\n" << std::flush;
+
+							if (std::cin >> label && label >= 0 && label <= 9) break;
+
+							label = -1;
+
+							if (std::cin.eof()) break;
+
+							std::cout << "- Stop typing shit, just write the correct number, it's not that hard.\n\n";
+
+							std::cin.clear();
+							std::cin.ignore(1000, '\n');
+						}
+
+						if (label >= 0)
+						{
+							nn.images.push_back({ std::move(pixels), static_cast<uint8_t>(label) });
+
+							end = 1;
+						}
+						else window.close();
+					}
 				}
 			}
 		}

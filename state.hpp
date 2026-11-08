@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include "neural_network.hpp"
 #include <unordered_map>
@@ -30,10 +32,14 @@ public:
 
 	void swap(state_type new_state);
 
-	// all states
 	void drawing();
 
 	void training();
 
 	void testing();
+
+private:
+	bool load_model(bool create_if_missing);
+
+	bool load_dataset(Dataset wanted);
 };
